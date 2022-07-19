@@ -1,0 +1,325 @@
+select 
+
+-- 核心指标
+  tianmao_day_bi.statistics_date as '统计日期',
+  pub_house_cnt as '在线房源',
+	(pub_house_cnt/yd_pub_house_cnt)-1 as '在线房源比昨日',
+	send_im+re_reserve+connected_phone as '当日商机对数和',
+	(send_im+re_reserve+connected_phone)/(yd_send_im+yd_re_reserve+yd_connected_phone)-1 as '商机对数和比昨日',
+	(send_im+re_reserve+connected_phone)/hf_uv as '核访-商机转化率',
+	((send_im+re_reserve+connected_phone)/hf_uv)/((yd_send_im+yd_re_reserve+yd_connected_phone)/yd_hf_uv)-1 as '核访-商机转化率比昨日',
+  all_dau as '频道UV',
+	(all_dau/yd_all_dau)-1 as '频道UV比昨日',
+	hf_uv as '核访UV',
+	(hf_uv/yd_hf_uv)-1 as '核访UV比昨日',
+	theme_uv as '云主题UV',
+	(theme_uv/yd_theme_uv)-1 as '云主题UV比昨日',
+	pindao_theme_uv as '云主题_剔除投放UV',
+	(pindao_theme_uv/yd_pindao_theme_uv)-1 as '云主题_剔除投放UV比昨日',
+	
+-- 	司店人
+  #-------------店司人-------------	
+-- 	sign_company_num.ka as 旗舰店总数,
+	ka_store_num as 旗舰店下门店数,
+-- 	ka_broker_num as 旗舰店下经纪人数,
+-- 	ka_pub_house_cnt as 旗舰店下在线房源数,
+  ka_jichu_store_num as 旗舰店基础包门店数,
+	ka_zhitong_store_num as 旗舰店直通车门店数,
+	ka_valid_jichu_store_num as 旗舰店基础包生效门店数,
+	ka_valid_zhitong_store_num as 旗舰店直通车生效门店数,
+
+	
+-- 	sign_company_num.pp as 品牌店总数,
+	pp_store_num as 品牌店下门店数,
+-- 	pp_broker_num as 品牌店下经纪人数,
+-- 	pp_pub_house_cnt as 品牌店下在线房源数,
+  pp_jichu_store_num as 品牌店基础包门店数,
+	pp_zhitong_store_num as 品牌店直通车门店数,
+	pp_valid_jichu_store_num as 品牌店基础包生效门店数,
+	pp_valid_zhitong_store_num as 品牌店直通车生效门店数,
+	
+	
+-- 	sign_company_num.bz as 标准店总数,
+	  bz_store_num as 标准店下门店数,
+-- 	bz_broker_num as 标准店下经纪人数,
+-- 	bz_pub_house_cnt as 标准店下在线房源数,
+  bz_jichu_store_num as 标准店基础包门店数,
+	bz_zhitong_store_num as 标准店直通车门店数,
+	bz_valid_jichu_store_num as 标准店基础包生效门店数,
+	bz_valid_zhitong_store_num as 标准店直通车生效门店数,
+	
+-- 流量漏斗  
+  all_dau as '频道UV',
+	yd_all_dau as '昨日频道UV',
+	concat(round((all_dau/yd_all_dau-1)*100,1),'%') as '频道UV比昨日',
+	hf_uv as '核访UV',
+	yd_hf_uv as '昨日核访UV',
+	concat(round((hf_uv/yd_hf_uv-1)*100,1),'%') as '核访UV比前日',
+	concat(round((hf_uv/all_dau)*100,1),'%') as '频道_核访页转化率',
+	concat(round(((hf_uv/all_dau)/(yd_hf_uv/yd_all_dau)-1)*100,1),'%') as '频道_核访页转化率比昨日',
+  (send_im+re_reserve+connected_phone) as '商机对数',
+	yd_send_im+yd_re_reserve+yd_connected_phone as '昨日商机对数',
+	concat(round(((send_im+re_reserve+connected_phone)/(yd_send_im+yd_re_reserve+yd_connected_phone)-1)*100,1),'%') as '商机对数比昨日',
+  concat(round(((send_im+re_reserve+connected_phone)/hf_uv)*100,1),'%') as '核访页_商机对数转化率',
+	concat(round((((send_im+re_reserve+connected_phone)/hf_uv)/((yd_send_im+yd_re_reserve+yd_connected_phone)/yd_hf_uv)-1)*100,1),'%') as '核访页_商机对数转化率比昨日',
+	
+-- 	核心指标
+  (seed_detail_uv+no_seed_detail_uv)/(seed_store_num+no_seed_store_num) as '门店店均UV',
+	((seed_detail_uv+no_seed_detail_uv)/(seed_store_num+no_seed_store_num))/((yd_seed_detail_uv+yd_no_seed_detail_uv)/(yd_seed_store_num+yd_no_seed_store_num))-1 as '门店店均UV比前日',
+	seed_detail_uv/seed_store_num as '种子店店均UV',
+	(seed_detail_uv/seed_store_num)/(yd_seed_detail_uv/yd_seed_store_num)-1 as '种子店店均UV比前日',
+  detail_depth_per as '人均访问深度',
+	(detail_depth_per/yd_detail_depth_per)-1 as '人均访问深度比前日',
+	(send_im+re_reserve+connected_phone)/(seed_store_num+no_seed_store_num) as '店均商机对数量',
+	((send_im+re_reserve+connected_phone)/(seed_store_num+no_seed_store_num))/((yd_send_im+yd_re_reserve+yd_connected_phone)/(yd_seed_store_num+yd_no_seed_store_num))-1 as '店均商机对数量比前日',
+	
+-- -- 	流量分发之种子类别
+-- --   二手房频道uv
+-- --   频道UV比前日
+--   seed_detail_uv as '种子商户uv',
+-- 	seed_store_num as '种子总商户数',
+-- 	seed_detail_uv/seed_store_num as '种子商户店均UV',
+-- 	(seed_send_im+seed_re_reserve+seed_connected_phone)/seed_store_num as '种子商户店均商机对数',
+-- 	no_seed_detail_uv as '非种子商户uv',
+-- 	no_seed_store_num as '非种子总商户数',
+-- 	no_seed_detail_uv/no_seed_store_num '非种子商户店均UV',
+-- 	(no_seed_send_im+no_seed_re_reserve+no_seed_connected_phone)/no_seed_detail_uv as '非种子商户店均商机对数',
+	
+-- 	流量分发之服务包类别
+--   二手房频道uv
+--   频道UV比前日
+
+
+  `zhitong_cf_detail_uv` as '直通车门店UV（城发）',
+	`valid_cf_zhitong_store_num` as '直通车城发生效门店数',
+	`zhitong_cf_detail_uv`/`valid_cf_zhitong_store_num` as '直通车(城发)店均UV',
+	`zhitong_cf_clue_num`/`valid_cf_zhitong_store_num` as '直通车（城发）店均商机对数',
+	
+  `zhitong_zy_detail_uv` as '直通车门店UV（直营）',
+	`valid_zy_zhitong_store_num` as '直通车直营生效门店数',
+	`zhitong_zy_detail_uv`/`valid_zy_zhitong_store_num` as '直通车(直营)店均UV',
+	`zhitong_zy_clue_num`/`valid_zy_zhitong_store_num` as '直通车(直营)店均商机对数',
+	
+  
+  `valid_jichu_detail_uv` as '基础包门店UV有效',
+	`valid_jichu_store_num` as '基础包生效门店数',
+	`valid_jichu_detail_uv`/`valid_jichu_store_num` as '基础包店均UV',
+	`valid_jichu_clue_num`/`valid_jichu_store_num` as '基础包店均商机对数',
+  
+-- 	zhitong_detail_uv as '直通车门店UV',
+-- 	zhitong_store_num as '直通车门店数',
+-- 	zhitong_detail_uv/zhitong_store_num as '直通车店均UV',
+-- 	(zhitong_send_im+zhitong_re_reserve+zhitong_connected_phone)/zhitong_store_num as '直通车店均商机对数',
+	no_pay_detail_uv as '非付费门店UV',
+	no_pay_store_num as '非付费门店数',
+	no_pay_detail_uv/no_pay_store_num as '非付费店均UV',
+	(no_pay_send_im+no_pay_re_reserve+no_pay_connected_phone)/no_pay_store_num as '非付费店均商机对数',
+
+	
+--  商机对数数据
+	connected_phone as '电话打通对数',
+	(connected_phone/yd_connected_phone)-1 as '电话打通对数比昨日',
+	send_im as 'IM商机对数',
+	(send_im/yd_send_im)-1 as 'IM商机对数比昨日',
+	re_reserve as '预约看房商机对数',
+	(re_reserve/yd_re_reserve)-1 as '预约看房商机对数比昨日',
+
+--  IM饼图
+  reply_im as 'IM服务商机对数',
+	send_im-reply_im as 'IM未服务商机对数',
+
+--  IM表格
+  `zhitong_zy_send_im` as '直通车直营IM商机对数',
+	concat(round((`zhitong_zy_reply_im`/`zhitong_zy_send_im`)*100,1),'%') as '直通车直营IM回复率',
+	concat(round(((`zhitong_zy_reply_im`/`zhitong_zy_send_im`)/(yd_zhitong_zy_reply_im/yd_zhitong_zy_send_im)-1)*100,1),'%') as '直通车直营IM回复率环比',
+	
+	`zhitong_cf_send_im` as '直通车城发IM商机对数',
+	concat(round((`zhitong_cf_reply_im`/`zhitong_cf_send_im`)*100,1),'%') as '直通车城发IM回复率',
+	concat(round(((`zhitong_cf_reply_im`/`zhitong_cf_send_im`)/(yd_zhitong_cf_reply_im/yd_zhitong_cf_send_im)-1)*100,1),'%') as '直通车城发IM回复率环比',
+	
+	`valid_jichu_send_im` as '基础包IM商机对数',
+	concat(round((`valid_jichu_reply_im`/`valid_jichu_send_im`)*100,1),'%') as '基础包IM回复率',
+	concat(round(((`valid_jichu_reply_im`/`valid_jichu_send_im`)/(yd_valid_jichu_reply_im/yd_valid_jichu_send_im)-1)*100,1),'%') as '基础包IM回复率环比',
+	
+	`no_pay_send_im` as '非付费IM商机对数',
+	concat(round((`no_pay_reply_im`/`no_pay_send_im`)*100,1),'%') as '非付费IM回复率',
+	concat(round(((`no_pay_reply_im`/`no_pay_send_im`)/(yd_no_pay_reply_im/yd_no_pay_send_im)-1)*100,1),'%') as '非付费IM回复率环比',
+	
+	`send_im`-`zhitong_zy_send_im`-`zhitong_cf_send_im`-`valid_jichu_send_im`-`no_pay_send_im` as '其他IM商机对数',
+	concat(round(((`reply_im`-`zhitong_zy_reply_im`-`zhitong_cf_reply_im`-`valid_jichu_reply_im`-`no_pay_reply_im`)/(`send_im`-`zhitong_zy_send_im`-`zhitong_cf_send_im`-`valid_jichu_send_im`-`no_pay_send_im`))*100,1),'%') as '其他IM回复率',
+	concat(round((((`reply_im`-`zhitong_zy_reply_im`-`zhitong_cf_reply_im`-`valid_jichu_reply_im`-`no_pay_reply_im`)/(`send_im`-`zhitong_zy_send_im`-`zhitong_cf_send_im`-`valid_jichu_send_im`-`no_pay_send_im`))/(yd_no_pay_reply_im/(`yd_send_im`-`yd_zhitong_zy_send_im`-`yd_zhitong_cf_send_im`-`yd_valid_jichu_send_im`-`yd_no_pay_send_im`))-1)*100,1),'%') as '其他IM回复率环比',
+
+-- 	预约单饼图
+	get_reserve as '当日接单对数',
+  re_reserve-get_reserve as '当日未接单对数',
+-- 	预约单表格
+  zhitong_zy_re_reserve as '直通车直营预约单对数',
+	concat(round((zhitong_zy_get_reserve/zhitong_zy_re_reserve)*100,1),'%') as '直通车直营接单率',
+	concat(round(((zhitong_zy_get_reserve/zhitong_zy_re_reserve)/(yd_zhitong_zy_get_reserve/yd_zhitong_zy_re_reserve)-1)*100,1),'%') as '直通车直营接单率环比',
+	
+	zhitong_cf_re_reserve as '直通车城发预约单对数',
+	concat(round((zhitong_cf_get_reserve/zhitong_cf_re_reserve)*100,1),'%') as '直通车城发接单率',
+	concat(round(((zhitong_cf_get_reserve/zhitong_cf_re_reserve)/(yd_zhitong_cf_get_reserve/yd_zhitong_cf_re_reserve)-1)*100,1),'%') as '直通车城发接单率环比',
+	
+	valid_jichu_re_reserve as '基础包预约单对数',
+	concat(round((valid_jichu_get_reserve/valid_jichu_re_reserve)*100,1),'%') as '基础包接单率',
+	concat(round(((valid_jichu_get_reserve/valid_jichu_re_reserve)/(yd_valid_jichu_get_reserve/yd_valid_jichu_re_reserve)-1)*100,1),'%') as '基础包接单率环比',
+	
+	no_pay_re_reserve as '非付费预约单对数',
+	concat(round((no_pay_get_reserve/no_pay_re_reserve)*100,1),'%') as '非付费接单率',
+	concat(round(((no_pay_get_reserve/no_pay_re_reserve)/(yd_no_pay_get_reserve/yd_no_pay_re_reserve)-1)*100,1),'%') as '非付费接单率环比',
+	
+	`re_reserve`-`zhitong_zy_re_reserve`-`zhitong_cf_re_reserve`-`valid_jichu_re_reserve`-`no_pay_re_reserve` as '其他预约单对数',
+	concat(round(((`get_reserve`-`zhitong_zy_get_reserve`-`zhitong_cf_get_reserve`-`valid_jichu_get_reserve`-`no_pay_get_reserve`)/(`re_reserve`-`zhitong_zy_re_reserve`-`zhitong_cf_re_reserve`-`valid_jichu_re_reserve`-`no_pay_re_reserve`))*100,1),'%') as '其他接单率',
+	concat(round((((`get_reserve`-`zhitong_zy_get_reserve`-`zhitong_cf_get_reserve`-`valid_jichu_get_reserve`-`no_pay_get_reserve`)/(`re_reserve`-`zhitong_zy_re_reserve`-`zhitong_cf_re_reserve`-`valid_jichu_re_reserve`-`no_pay_re_reserve`))/(yd_no_pay_get_reserve/(`yd_re_reserve`-`yd_zhitong_zy_re_reserve`-`yd_zhitong_cf_re_reserve`-`yd_valid_jichu_re_reserve`-`yd_no_pay_re_reserve`))-1)*100,1),'%') as '其他接单率环比',
+	
+	
+	
+-- 	电话饼图
+	answer_phone as '电话接听对数',
+	connected_phone-answer_phone as '电话未接听对数',
+-- 	电话表格
+  zhitong_zy_connected_phone as '直通车直营电话接通对数',
+	concat(round((zhitong_zy_answer_phone/zhitong_zy_connected_phone)*100,1),'%') as '直通车直营接听率',
+	concat(round(((zhitong_zy_answer_phone/zhitong_zy_connected_phone)/(yd_zhitong_zy_answer_phone/yd_zhitong_zy_connected_phone)-1)*100,1),'%') as '直通车直营接听率环比',
+	
+	zhitong_cf_connected_phone as '直通车城发电话接通对数',
+	concat(round((zhitong_cf_answer_phone/zhitong_cf_connected_phone)*100,1),'%') as '直通车城发接听率',
+	concat(round(((zhitong_cf_answer_phone/zhitong_cf_connected_phone)/(yd_zhitong_cf_answer_phone/yd_zhitong_cf_connected_phone)-1)*100,1),'%') as '直通车城发接听率环比',
+	
+	valid_jichu_connected_phone as '基础包电话接通对数',
+	concat(round((valid_jichu_answer_phone/valid_jichu_connected_phone)*100,1),'%') as '基础包接听率',
+	concat(round(((valid_jichu_answer_phone/valid_jichu_connected_phone)/(yd_valid_jichu_answer_phone/yd_valid_jichu_connected_phone)-1)*100,1),'%') as '基础包接听率环比',
+	
+	no_pay_connected_phone as '非付费电话接通对数',
+	concat(round((no_pay_answer_phone/no_pay_connected_phone)*100,1),'%') as '非付费接听率',
+	concat(round(((no_pay_answer_phone/no_pay_connected_phone)/(yd_no_pay_answer_phone/yd_no_pay_connected_phone)-1)*100,1),'%') as '非付费接听率环比',
+	
+	`connected_phone`-`zhitong_zy_connected_phone`-`zhitong_cf_connected_phone`-`valid_jichu_connected_phone`-`no_pay_connected_phone` as '其他电话接通对数',
+	concat(round(((`answer_phone`-`zhitong_zy_answer_phone`-`zhitong_cf_answer_phone`-`valid_jichu_answer_phone`-`no_pay_answer_phone`)/(`connected_phone`-`zhitong_zy_connected_phone`-`zhitong_cf_connected_phone`-`valid_jichu_connected_phone`-`no_pay_connected_phone`))*100,1),'%') as '其他接听率',
+	concat(round((((`answer_phone`-`zhitong_zy_answer_phone`-`zhitong_cf_answer_phone`-`valid_jichu_answer_phone`-`no_pay_answer_phone`)/(`connected_phone`-`zhitong_zy_connected_phone`-`zhitong_cf_connected_phone`-`valid_jichu_connected_phone`-`no_pay_connected_phone`))/(yd_no_pay_answer_phone/(`yd_connected_phone`-`yd_zhitong_zy_connected_phone`-`yd_zhitong_cf_connected_phone`-`yd_valid_jichu_connected_phone`-`yd_no_pay_connected_phone`))-1)*100,1),'%') as '其他接听率环比'
+	
+	
+	
+	
+	from tianmao_day_bi,
+  (select 
+	zhitong_zy_reply_im as yd_zhitong_zy_reply_im,
+	zhitong_cf_reply_im as yd_zhitong_cf_reply_im,
+	no_pay_reply_im as yd_no_pay_reply_im,
+	valid_jichu_reply_im as yd_valid_jichu_reply_im,
+	zhitong_zy_send_im as yd_zhitong_zy_send_im,
+	zhitong_cf_send_im as yd_zhitong_cf_send_im,
+	no_pay_send_im as yd_no_pay_send_im,
+	valid_jichu_send_im as yd_valid_jichu_send_im,
+	zhitong_zy_get_reserve as yd_zhitong_zy_get_reserve,
+	zhitong_cf_get_reserve as yd_zhitong_cf_get_reserve,
+	no_pay_get_reserve as yd_no_pay_get_reserve,
+	valid_jichu_get_reserve as yd_valid_jichu_get_reserve,
+	zhitong_zy_re_reserve as yd_zhitong_zy_re_reserve,
+	zhitong_cf_re_reserve as yd_zhitong_cf_re_reserve,
+	no_pay_re_reserve as yd_no_pay_re_reserve,
+	valid_jichu_re_reserve as yd_valid_jichu_re_reserve,
+	zhitong_zy_answer_phone as yd_zhitong_zy_answer_phone,
+	zhitong_cf_answer_phone as yd_zhitong_cf_answer_phone,
+	no_pay_answer_phone as yd_no_pay_answer_phone,
+	valid_jichu_answer_phone as yd_valid_jichu_answer_phone,
+	zhitong_zy_connected_phone as yd_zhitong_zy_connected_phone,
+	zhitong_cf_connected_phone as yd_zhitong_cf_connected_phone,
+	no_pay_connected_phone as yd_no_pay_connected_phone,
+	valid_jichu_connected_phone as yd_valid_jichu_connected_phone,
+	statistics_date   as  yd_statistics_date ,
+  pub_house_cnt   as  yd_pub_house_cnt ,
+  ka_store_num   as  yd_ka_store_num ,
+  ka_broker_num   as  yd_ka_broker_num ,
+  ka_pub_house_cnt   as  yd_ka_pub_house_cnt ,
+  pp_store_num   as  yd_pp_store_num ,
+  pp_broker_num   as  yd_pp_broker_num ,
+  pp_pub_house_cnt   as  yd_pp_pub_house_cnt ,
+  bz_store_num   as  yd_bz_store_num ,
+  bz_broker_num   as  yd_bz_broker_num ,
+  bz_pub_house_cnt   as  yd_bz_pub_house_cnt ,
+  hf_uv   as  yd_hf_uv ,
+  detail_uv   as  yd_detail_uv ,
+  theme_uv   as  yd_theme_uv ,
+  pindao_theme_uv   as  yd_pindao_theme_uv ,
+  detail_depth_per   as  yd_detail_depth_per ,
+  page_stay_time_per   as  yd_page_stay_time_per ,
+  connected_phone   as  yd_connected_phone ,
+  send_im   as  yd_send_im ,
+  re_reserve   as  yd_re_reserve ,
+  reply_im   as  yd_reply_im ,
+  clk_reserve_uv   as  yd_clk_reserve_uv ,
+  reply_1m_im   as  yd_reply_1m_im ,
+  clk_phone_uv   as  yd_clk_phone_uv ,
+  answer_phone   as  yd_answer_phone ,
+  pri_house_cnt   as  yd_pri_house_cnt ,
+  broker_entrust_cnt   as  yd_broker_entrust_cnt ,
+  broker_cnt   as  yd_broker_cnt ,
+  pub_item_rate   as  yd_pub_item_rate ,
+  house_detail_uv   as  yd_house_detail_uv ,
+  re_business_num   as  yd_re_business_num ,
+  clk_business_num   as  yd_clk_business_num ,
+  percent_reply   as  yd_percent_reply ,
+  percent_1m_reply   as  yd_percent_1m_reply ,
+  get_reserve   as  yd_get_reserve ,
+  seed_detail_uv   as  yd_seed_detail_uv ,
+  no_seed_detail_uv   as  yd_no_seed_detail_uv ,
+  seed_detail_uv_num   as  yd_seed_detail_uv_num ,
+  no_seed_detail_uv_num   as  yd_no_seed_detail_uv_num ,
+  seed_store_num   as  yd_seed_store_num ,
+  no_seed_store_num   as  yd_no_seed_store_num ,
+  seed_connected_phone   as  yd_seed_connected_phone ,
+  no_seed_connected_phone   as  yd_no_seed_connected_phone ,
+  seed_re_reserve   as  yd_seed_re_reserve ,
+  no_seed_re_reserve   as  yd_no_seed_re_reserve ,
+  seed_send_im   as  yd_seed_send_im ,
+  no_seed_send_im   as  yd_no_seed_send_im ,
+  seed_clue_num   as  yd_seed_clue_num ,
+  no_seed_clue_num   as  yd_no_seed_clue_num ,
+  jichu_detail_uv   as  yd_jichu_detail_uv ,
+  jichu_detail_uv_num   as  yd_jichu_detail_uv_num ,
+  zhitong_detail_uv   as  yd_zhitong_detail_uv ,
+  zhitong_detail_uv_num   as  yd_zhitong_detail_uv_num ,
+  no_pay_detail_uv   as  yd_no_pay_detail_uv ,
+  no_pay_detail_uv_num   as  yd_no_pay_detail_uv_num ,
+  jichu_store_num   as  yd_jichu_store_num ,
+  zhitong_store_num   as  yd_zhitong_store_num ,
+  no_pay_store_num   as  yd_no_pay_store_num ,
+  jichu_connected_phone   as  yd_jichu_connected_phone ,
+  zhitong_connected_phone   as  yd_zhitong_connected_phone ,
+  jichu_re_reserve   as  yd_jichu_re_reserve ,
+  zhitong_re_reserve   as  yd_zhitong_re_reserve ,
+  jichu_send_im   as  yd_jichu_send_im ,
+  zhitong_send_im   as  yd_zhitong_send_im ,
+  jichu_clue_num   as  yd_jichu_clue_num,
+  zhitong_clue_num   as  yd_zhitong_clue_num,
+  no_pay_clue_num as yd_no_pay_clue_num,
+	all_dau as yd_all_dau
+	,ziran_dau as yd_ziran_dau
+	from tianmao_day_bi 
+	where tianmao_day_bi.statistics_date=date_sub(curdate(),interval 2 day)
+	) 
+	yd,
+-- 	(SELECT
+-- 								statistics_date,
+-- 								sum(IF(company_sign_type=1,store_num,0)) as bz_store_num,
+-- 								sum(IF(company_sign_type=2,store_num,0)) as pp_store_num,
+-- 								sum(IF(company_sign_type=3,store_num,0)) as ka_store_num
+-- 								from
+-- 								(
+-- 								select
+-- 										statistics_date,
+-- 									 company_sign_type,
+-- 									 count( store_id) as store_num
+-- 								from etc_store_detail
+-- 								where etc_store_detail.statistics_date=date_sub(curdate(),interval 1 day)
+-- 								GROUP BY company_sign_type)tb1
+-- 								) store_num,
+	(select 
+count(distinct if(company_sign_type=3,sign_company_id,null))  ka
+,count(distinct if(company_sign_type=2,sign_company_id,null))  pp
+,count(distinct if(company_sign_type=1,sign_company_id,null))  bz
+from etc_store_detail
+where etc_store_detail.statistics_date=date_sub(curdate(),interval 1 day)) sign_company_num
+	where tianmao_day_bi.statistics_date=date_sub(curdate(),interval 1 day)
