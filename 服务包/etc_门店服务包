@@ -1,0 +1,14 @@
+SELECT LEFT(a.server_start_time,19) AS 合同起始日期,
+c.sign_company_id AS 签约公司ID,
+d.company_name AS 签约公司名称,
+d.company_city AS 签约公司城市,
+a.store_id AS 门店ID,
+b.store_name AS 门店名称,
+b.store_city AS 门店城市,
+CASE a.server_type WHEN 1 THEN '基础服务包' else null END AS 服务类型1,
+CASE a.server_type WHEN 2 THEN '直通车' else null  END AS 服务类型2,
+CASE a.server_type WHEN 3 THEN '直通车+ETC公盘' else null END AS 服务类型3
+FROM etc_plat_server_package_info a
+JOIN etc_plat_store b ON a.store_id=b.store_id
+JOIN etc_plat_company c ON b.company_id=c.company_id
+LEFT JOIN etc_plat_company d ON c.sign_company_id=d.company_id;
