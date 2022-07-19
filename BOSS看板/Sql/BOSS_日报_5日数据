@@ -1,0 +1,26 @@
+select 
+		   distinct statistics_date as 日期,
+			 #date_format( statistics_date,'%m-%d') as 日期,
+			 online_house_num as 在线房源,
+			 pp_store_num as 品牌店总数,
+			 bz_store_num as 标准店总数,
+			 channel_uv as 频道uv,
+			 send_im_uv+ v_u_total_customer_day + new_order.order_num_total as 当日线索量,
+			 v_u_total_customer_day,
+			 phone_pv as 电话点击次数,
+			 phone_uv as 电话点击人数,
+			 im_pv as 在线问点击次数,
+			 im_uv as 在线问点击人数
+from 
+    ali_boss_daliy_detail
+	left join
+			(select 
+						statistics_date as 日期,
+						sum(union_waiting_order_num) as order_num_total
+						from etc_clue_store_num
+						group by statistics_date
+						having statistics_date between date_sub(curdate(),interval 7 day) and date_sub(curdate(),interval 1 day)
+						) new_order
+		on ali_boss_daliy_detail.statistics_date=new_order.日期
+  where statistics_date between DATE_SUB(CURDATE(), INTERVAL 7 DAY) and DATE_SUB(CURDATE(), INTERVAL 1 DAY)
+  order by statistics_date
