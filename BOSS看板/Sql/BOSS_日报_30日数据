@@ -1,0 +1,36 @@
+select 
+		   distinct ali_boss_daliy_detail.statistics_date as 日期,
+			 online_house_num as 在线房源,
+			 send_im_uv+ v_u_total_customer_day + new_order.order_num_total as 当日线索量,
+	
+
+	
+	
+	#-------------线索数据-------------	
+	v_u_total_customer_day as 电话量,
+
+	send_im_uv as IM咨询量,
+  
+	new_order.order_num_total as 带看预约单数,
+	
+	(send_im_uv+ v_u_total_customer_day + new_order.order_num_total)/(community_uv+detail_uv+broker_uv) as 线索转化,
+	channel_uv as 频道uv,
+	list_uv as 列表UV,
+	detail_uv as 房源UV,
+	yun_theme_uv as 云主题UV
+
+	
+	from ali_boss_daliy_detail
+	left join					
+  (select 
+						statistics_date as 日期,
+						sum(union_waiting_order_num) as order_num_total
+						from etc_clue_store_num
+						group by statistics_date
+						having statistics_date between date_sub(curdate(),interval 30 day) and date_sub(curdate(),interval 1 day)
+						) new_order
+		on  ali_boss_daliy_detail.statistics_date=new_order.日期
+	where statistics_date between DATE_SUB(CURDATE(), INTERVAL 30 DAY) and DATE_SUB(CURDATE(), INTERVAL 1 DAY)
+order by 日期 
+							 
+	 
