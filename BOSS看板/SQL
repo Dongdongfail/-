@@ -1,0 +1,269 @@
+select 
+
+
+
+	#-------------核心数据 -------------
+
+
+	online_house_num as 在线房源,
+  round((online_house_num/yd_ali_boss_daliy_detail.yd_online_house_num)-1,3) as 在线房源比前日,
+  send_im_uv+ v_u_total_customer_day+ new_order.order_num_total as 当日线索量,
+  (send_im_uv+ v_u_total_customer_day+ new_order.order_num_total)/(yd_ali_boss_daliy_detail.yd_send_im_uv+ yd_v_u_total_customer_day + yd_ali_boss_daliy_detail.yd_new_order.order_num_total)-1 as 当日线索量比前日,
+	
+		(send_im_uv+ v_u_total_customer_day+ new_order.order_num_total)/(community_uv+detail_uv+broker_uv) as 线索转化,
+	((send_im_uv+ v_u_total_customer_day+ new_order.order_num_total)/(community_uv+detail_uv+broker_uv)) / ((yd_send_im_uv+ yd_v_u_total_customer_day + yd_new_order.order_num_total)/(yd_ali_boss_daliy_detail.yd_community_uv+yd_ali_boss_daliy_detail.yd_detail_uv+yd_ali_boss_daliy_detail.yd_broker_uv))-1 as 线索转化比前日,	
+	
+	channel_uv as 频道uv,
+	(channel_uv/yd_ali_boss_daliy_detail.yd_channel_uv)-1 as 频道uv比前日,
+	list_uv as 列表UV,
+	(list_uv/yd_ali_boss_daliy_detail.yd_list_uv)-1 as 列表uv比前日,
+	detail_uv as 房源UV,
+	(detail_uv/yd_ali_boss_daliy_detail.yd_detail_uv)-1 as 房源uv比前日,
+	yun_theme_uv as 云主题UV,
+	(yun_theme_uv/yd_ali_boss_daliy_detail.yd_yun_theme_uv)-1 as 云主题uv比前日,
+	
+	
+	#-------------店司人-------------	
+	sign_company_num.ka as 旗舰店总数,
+	store_num.ka_store_num as 旗舰店下门店数,
+	ka_broker_num as 旗舰店下经纪人数,
+	ka_online_house_num as 旗舰店下在线房源数,
+	
+	sign_company_num.pp as 品牌店总数,
+	store_num.pp_store_num as 品牌店下门店数,
+	pp_broker_num as 品牌店下经纪人数,
+	pp_online_house_num as 品牌店下在线房源数,
+	
+	sign_company_num.bz as 标准店总数,
+	ali_boss_daliy_detail.bz_store_num as 标准店下门店数,
+	bz_broker_num as 标准店下经纪人数,
+	bz_online_house_num as 标准店下在线房源数,
+	
+	#-------------线索数据-------------	
+	v_u_total_customer_day as 400电话量,
+	(v_u_total_customer_day/yd_v_u_total_customer_day)-1 as 400电话量比前日,
+	v_u_connect_day as 电话接通,
+	400_total-v_u_connect_day as 电话未接通,
+	
+	send_im_uv as IM咨询量,	
+	(send_im_uv/yd_send_im_uv)-1 as IM咨询量比前日,	
+	service_im_uv as IM响应人数,
+	send_im_uv-service_im_uv as IM未响应人数,
+	
+	
+	new_order.order_num_total as 带看预约单数,	
+	new_order.order_num_total/yd_new_order.order_num_total-1 as 带看预约单数比前日,
+	waiting_order_num as 等待接单,
+	unseen_order_num as '已接单&尚未带看',
+	seen_order_num as '已接单&订单关闭',
+	seenover_order_num as '已接单 & 带看完成',
+	
+	
+	#-------------流量数据-------------	
+	store_store_uv/(store_num.ka_store_num+store_num.pp_store_num+ali_boss_daliy_detail.bz_store_num+1)  门店店均UV,
+
+	(store_store_uv/(store_num.ka_store_num+store_num.pp_store_num+ali_boss_daliy_detail.bz_store_num+1))/(yd_store_store_uv/(yd_store_num.ka_store_num+yd_store_num.pp_store_num+yd_ali_boss_daliy_detail.yd_bz_store_num+1))-1 门店店均UV比前日,
+	(new_order.400_num_total+new_order.order_num_total+new_order.send_im_total)/(store_num.ka_store_num+store_num.pp_store_num+ali_boss_daliy_detail.bz_store_num+1) as 门店店均线索量,
+	(new_order.400_num_total+new_order.order_num_total+new_order.send_im_total)/(store_num.ka_store_num+store_num.pp_store_num+ali_boss_daliy_detail.bz_store_num+1)/((yd_new_order.400_num_total+yd_new_order.order_num_total+yd_new_order.send_im_total)/(yd_store_num.ka_store_num+yd_store_num.pp_store_num+yd_ali_boss_daliy_detail.yd_bz_store_num+1))-1 as 店均线索量日环比,
+	detail_pv/detail_uv as 人均浏览房源,
+	(detail_pv/detail_uv)/(yd_detail_pv/yd_detail_uv)-1 as 人均浏览房源比前日,
+  (core_store_uv/core_all_store_num)/(yd_core_store_uv/yd_core_all_store_num)-1 种子店店均UV比前日,
+	
+	
+	core_store_uv  种子商户UV,
+	core_all_store_num  种子门店数,
+	core_store_uv/core_all_store_num   种子店店均UV,
+	  (core_order.400_num_total+core_order.order_num_total+core_order.send_im_total)/core_all_store_num as 种子门店店均线索量,
+	store_store_uv-core_store_uv 非种子商户UV,
+	(store_num.ka_store_num+store_num.pp_store_num+store_num.bz_store_num-core_all_store_num+1) 非种子门店数,
+	(store_store_uv-core_store_uv)/(store_num.ka_store_num+store_num.pp_store_num+store_num.bz_store_num-core_all_store_num+1) as 非种子店店均UV,
+	(incore_order.400_num_total+incore_order.order_num_total+incore_order.send_im_total)/(store_num.ka_store_num+store_num.pp_store_num+store_num.bz_store_num-core_all_store_num+1) as 非种子门店店均线索量,
+
+-- 	((core_order.400_num_total+core_order.order_num_total+core_order.send_im_total)/core_valid_store_num)/((yd_core_order.400_num_total+yd_core_order.order_num_total+yd_core_order.send_im_total)/yd_core_valid_store_num)-1 as 种子门店店均线索量日环比,
+-- 	((incore_order.400_num_total+incore_order.order_num_total+incore_order.send_im_total)/(store_uv_num-core_valid_store_num))/((yd_incore_order.400_num_total+yd_incore_order.order_num_total+yd_incore_order.send_im_total)/(yd_store_uv_num-yd_core_valid_store_num))-1 as 非种子门店店均线索量日环比,
+	
+	
+	jichu_store_uv  基础包商户UV,
+	jichu_store_num     基础包门店数,
+	jichu_store_uv/jichu_store_num  基础包门店店均UV,
+	jichu_clue_num/jichu_store_num as 基础包门店店均线索量,
+	
+	zhitong_store_uv  直通车门店UV,
+	zhitong_store_num     直通车门店数,
+	zhitong_store_uv/zhitong_store_num   直通车门店店均UV,
+	zhitong_clue_num/zhitong_store_num  as 直通车门店店均线索量,
+	
+	no_pay_store_uv  非付费门店UV,
+	no_pay_store_num     非付费门店数,
+	no_pay_store_uv/no_pay_store_num 非付费门店店均UV,
+	no_pay_clue_num/no_pay_store_num as 非付费门店店均线索量
+	
+	
+	
+	from ali_boss_daliy_detail,
+					#boss日报昨日数据
+					(
+							select ka_uv as yd_ka_uv,
+							       pp_uv as yd_pp_uv,
+										 bz_uv as yd_bz_uv,
+										 ka_avg_pv as yd_ka_avg_pv,
+										 pp_avg_pv as yd_pp_avg_pv,
+										 bz_avg_pv as yd_bz_avg_pv,
+										 channel_pv as yd_channel_pv,
+										 channel_uv as yd_channel_uv,
+										 list_pv as yd_list_pv,
+										 list_uv as yd_list_uv,
+										 detail_pv as yd_detail_pv,
+										 detail_uv as yd_detail_uv,
+										 brand_store_pv as yd_brand_store_pv,
+										 brand_store_uv as yd_brand_store_uv,
+										 store_pv as yd_store_pv,
+										 store_uv as yd_store_uv,
+										 broker_pv as yd_broker_pv,
+										 broker_uv as yd_broker_uv,
+										 yun_theme_pv as yd_yun_theme_pv,
+										 yun_theme_uv as yd_yun_theme_uv,
+										 community_pv as yd_community_pv,
+										 community_uv as yd_community_uv,
+										 im_pv as yd_im_pv,
+										 send_im_uv as yd_send_im_uv,
+										 phone_pv as yd_phone_pv,
+										 phone_uv as yd_phone_uv,
+										 reserve_pv as yd_reserve_pv,
+										 reserve_uv as yd_reserve_uv,
+										 rc_num as yd_rc_num,
+										 ef_im_pv as yd_ef_im_pv,
+										 ef_im_uv as yd_ef_im_uv,
+										 service_im_pv as yd_service_im_pv,
+										 service_im_uv as yd_service_im_uv,
+										 minute_im_pv as yd_minute_im_pv,
+										 minute_im_uv as yd_minute_im_uv,
+										 400_total as yd_400_total,
+										 400_conn_f_total as yd_400_conn_f_total,
+										 400_unconn_total as yd_400_unconn_total,
+										 relation_order_num as yd_relation_order_num,
+										 waiting_order_num as yd_waiting_order_num,
+										 unseen_order_num as yd_unseen_order_num,
+										 seen_order_num as yd_seen_order_num,
+										 seenover_order_num as yd_seenover_order_num,
+										 overtime_order_num as yd_overtime_order_num,
+										 online_house_num as yd_online_house_num,
+										 bz_store_num as yd_bz_store_num,
+										 pp_store_num as yd_pp_store_num,
+										 ka_store_num as yd_ka_store_num,
+										 core_store_uv as yd_core_store_uv,
+										      core_valid_store_num as yd_core_valid_store_num,
+													core_all_store_num as yd_core_all_store_num,
+										 store_uv_num as yd_store_uv_num,
+										 store_store_uv as yd_store_store_uv,
+										 v_u_total_customer_day as yd_v_u_total_customer_day
+						  from ali_boss_daliy_detail
+							where ali_boss_daliy_detail.statistics_date = DATE_SUB(CURDATE(), INTERVAL 2 DAY)					
+					) yd_ali_boss_daliy_detail,
+					
+					
+					
+								(SELECT
+								statistics_date,
+								sum(IF(company_sign_type=1,store_num,0)) as bz_store_num,
+								sum(IF(company_sign_type=2,store_num,0)) as pp_store_num,
+								sum(IF(company_sign_type=3,store_num,0)) as ka_store_num
+								from
+								(
+								select
+										statistics_date,
+									 company_sign_type,
+									 count( store_id) as store_num
+								from elou_etc.etc_store_detail
+								where statistics_date=date_sub(curdate(),interval 1 day)
+								GROUP BY company_sign_type)tb1
+								) store_num,
+								
+								(SELECT
+								statistics_date,
+								sum(IF(company_sign_type=1,store_num,0)) as bz_store_num,
+								sum(IF(company_sign_type=2,store_num,0)) as pp_store_num,
+								sum(IF(company_sign_type=3,store_num,0)) as ka_store_num
+								from
+								(
+								select
+										statistics_date,
+									 company_sign_type,
+									 count( store_id) as store_num
+								from elou_etc.etc_store_detail
+								where statistics_date=date_sub(curdate(),interval 2 day)
+								GROUP BY company_sign_type)tb1
+								) yd_store_num,
+								(select 
+								statistics_date,
+								sum(union_waiting_order_num) as order_num_total,
+								sum(400_total_customer) as 400_num_total,
+								sum(send_im_uv) as send_im_total,
+								sum(clue_total_num) as clue_total
+								from etc_clue_store_num
+								group by statistics_date
+								having statistics_date=date_sub(curdate(),interval 1 day)
+								) new_order,
+								(select 
+								statistics_date,
+								sum(union_waiting_order_num) as order_num_total,
+								sum(400_total_customer) as 400_num_total,
+								sum(send_im_uv) as send_im_total,
+								sum(clue_total_num) as clue_total
+								from etc_clue_store_num
+								group by statistics_date
+								having statistics_date=date_sub(curdate(),interval 2 day)
+								) yd_new_order,
+						    (select  -- 种子商户今日线索表
+								statistics_date,
+								sum(union_waiting_order_num) as order_num_total,
+								sum(400_total_customer) as 400_num_total,
+								sum(send_im_uv) as send_im_total,
+								sum(clue_total_num) as clue_total
+								from etc_clue_store_num
+								where is_seed=1
+								group by statistics_date
+								having statistics_date=date_sub(curdate(),interval 1 day)
+								) core_order,
+								(select -- 种子商户昨日线索表
+								statistics_date,
+								sum(union_waiting_order_num) as order_num_total,
+								sum(400_total_customer) as 400_num_total,
+								sum(send_im_uv) as send_im_total,
+								sum(clue_total_num) as clue_total
+								from etc_clue_store_num
+								where is_seed=1
+								group by statistics_date
+								having statistics_date=date_sub(curdate(),interval 2 day)
+								) yd_core_order,
+						(select  -- 非种子商户今日线索表
+								statistics_date,
+								sum(union_waiting_order_num) as order_num_total,
+								sum(400_total_customer) as 400_num_total,
+								sum(send_im_uv) as send_im_total,
+								sum(clue_total_num) as clue_total
+								from etc_clue_store_num
+								where is_seed=0
+								group by statistics_date
+								having statistics_date=date_sub(curdate(),interval 1 day)
+						) incore_order,
+						(select -- 非种子商户昨日线索表
+								statistics_date,
+								sum(union_waiting_order_num) as order_num_total,
+								sum(400_total_customer) as 400_num_total,
+								sum(send_im_uv) as send_im_total,
+								sum(clue_total_num) as clue_total
+								from etc_clue_store_num
+								where is_seed=0
+								group by statistics_date
+								having statistics_date=date_sub(curdate(),interval 2 day)
+								) yd_incore_order,
+	(select 
+count(distinct if(company_sign_type=3,sign_company_id,null))  ka
+,count(distinct if(company_sign_type=2,sign_company_id,null))  pp
+,count(distinct if(company_sign_type=1,sign_company_id,null))  bz
+from etc_store_detail
+where statistics_date=date_sub(curdate(),interval 1 day)) sign_company_num
+								
+	              
+where ali_boss_daliy_detail.statistics_date = DATE_SUB(CURDATE(), INTERVAL 1 DAY)
