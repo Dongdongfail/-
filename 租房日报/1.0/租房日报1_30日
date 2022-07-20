@@ -1,0 +1,17 @@
+select
+-- 核心指标
+  statistics_date as '统计日期',
+  pub_house_cnt as '在线房源',
+	send_im_all+connected_phone as '当日商机对数和',
+	(send_im_all+connected_phone)/hf_uv as '核访-商机转化率',
+  all_dau as '频道UV',
+	hf_uv as '核访UV',
+	theme_uv as '云主题UV',
+	pindao_theme_uv as '云主题-剔除投放UV',
+
+--  线索数据
+	connected_phone as '电话打通对数',
+	send_im_all as 'IM商机对数'
+from tianmao_zf_day_bi
+where statistics_date between DATE_SUB(CURDATE(), INTERVAL 30 DAY) and DATE_SUB(CURDATE(), INTERVAL 1 DAY)
+order by statistics_date
